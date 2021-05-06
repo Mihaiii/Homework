@@ -5,7 +5,15 @@ import KittyCoreABI from '../contracts/KittyCoreABI.json';
 import { CONTRACT_NAME, CONTRACT_ADDRESS } from '../config';
 
 class Browser extends Component {
-  
+
+  //TODO: make kitty react component
+
+  constructor() {
+    super();
+    this.state = {id: '', genes: '', generation: '', birthTime: ''};
+    this.updateWithKittyData = this.updateWithKittyData.bind(this);
+  }
+
   componentDidMount() {
     const web3 = new Web3(window.web3.currentProvider);
 
@@ -22,6 +30,27 @@ class Browser extends Component {
       contractName: CONTRACT_NAME,
       web3Contract: kittyContract,
     });
+
+    kittyContract.methods.totalSupply().call().then((totalSupply) => { this.totalKittySupply = totalSupply; });
+  }
+
+  async updateWithKittyData() {
+    var id = this.state.id;
+    if(isNaN(id) || parseInt(id) < 0 || parseInt(id) > this.totalKittySupply)
+    {
+      //TODO: display err msg
+      return;
+    }
+    var kittyContract = this.context.drizzle.contractList[0];
+    var kitty = await kittyContract.methods.getKitty(id).call();
+    //TODO: convert from epoch to desired date format
+    this.setState({id: id, genes: kitty.genes, generation: kitty.generation, birthTime: kitty.birthTime});
+  }
+
+  update() {
+    return (e) => {
+      this.setState({id: e.target.value, genes: '', generation: '', birthTime: ''});
+    };
   }
 
   render() {
@@ -30,10 +59,28 @@ class Browser extends Component {
         <h1>
           Kitty Browser
         </h1>
+        <div>
+          <div><strong>Kitty ID:</strong></div>
+          <div className="ui input">
+            <input type="text" value= {this.state.id} onChange={this.update()} />
+          </div>
+          <button type="button" className="ui grey button" onClick={this.updateWithKittyData}>FIND KITTY</button>
+        </div>
 
-        {/* Input to type in the kitty ID here */}
+        <div>
+          <div><strong>Genes</strong></div>
+          <p>{this.state.genes}</p>
+        </div>
 
-        {/* Display Kitty info here */}
+        <div>
+          <div><strong>Generation</strong></div>
+          <p>{this.state.generation}</p>
+        </div>
+
+        <div>
+          <div><strong>Birth Time</strong></div>
+          <p>{this.state.birthTime}</p>
+        </div>
       </div>
     );
   }
