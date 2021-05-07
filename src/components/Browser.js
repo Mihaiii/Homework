@@ -9,7 +9,7 @@ class Browser extends Component {
 
   constructor() {
     super();
-    this.state = {id: '', genes: '', generation: '', birthTime: ''};
+    this.state = {kittyId: '', genes: '', generation: '', birthTime: ''};
     this.updateWithKittyData = this.updateWithKittyData.bind(this);
     this.updateWithRandomKittyData = this.updateWithRandomKittyData.bind(this);
   }
@@ -43,7 +43,7 @@ class Browser extends Component {
   }
 
   async updateWithKittyData() {
-    var id = this.state.id;
+    var id = this.state.kittyId;
     if(isNaN(id) || parseInt(id) < 0 || parseInt(id) > this.kittyLimit)
     {
       //TODO: display err msg
@@ -54,7 +54,7 @@ class Browser extends Component {
     var kitty = await kittyContract.methods.getKitty(id).call();
     //TODO: convert from epoch to desired date format
     if (kitty) {
-      this.setState({id: id, genes: kitty.genes, generation: kitty.generation, birthTime: kitty.birthTime});
+      this.setState({kittyId: id, genes: kitty.genes, generation: kitty.generation, birthTime: kitty.birthTime});
     } else {
       //TODO: display err msg 
     }
@@ -66,7 +66,7 @@ class Browser extends Component {
     var kitty = await kittyContract.methods.getKitty(randomId).call();
     //TODO: convert from epoch to desired date format
     if (kitty) {
-      this.setState({id: randomId, genes: kitty.genes, generation: kitty.generation, birthTime: kitty.birthTime});
+      this.setState({kittyId: randomId, genes: kitty.genes, generation: kitty.generation, birthTime: kitty.birthTime});
     } else {
       //TODO: display err msg 
     }
@@ -74,7 +74,7 @@ class Browser extends Component {
 
   update() {
     return (e) => {
-      this.setState({id: e.target.value, genes: '', generation: '', birthTime: ''});
+      this.setState({kittyId: e.target.value, genes: '', generation: '', birthTime: ''});
     };
   }
 
@@ -87,13 +87,16 @@ class Browser extends Component {
         <div>
           <div><strong>Kitty ID:</strong></div>
           <div className="ui input">
-            <input type="text" value= {this.state.id} onChange={this.update()} />
+            <input type="text" value= {this.state.kittyId} onChange={this.update()} />
           </div>
           <button type="button" className="ui grey button" onClick={this.updateWithKittyData}>FIND KITTY</button>
           <button type="button" className="ui purple button" onClick={this.updateWithRandomKittyData}>Fetch random Kitty</button>
         </div>
 
-        <KittyInfo genes={this.state.genes} generation={this.state.generation} birthTime={this.state.birthTime}></KittyInfo>
+        <KittyInfo genes={this.state.genes} 
+                   generation={this.state.generation} 
+                   birthTime={this.state.birthTime} 
+                   kittyId={this.state.kittyId} />
       </div>
     );
   }
