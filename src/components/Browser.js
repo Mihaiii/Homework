@@ -12,6 +12,7 @@ class Browser extends Component {
     super();
     this.state = {id: '', genes: '', generation: '', birthTime: ''};
     this.updateWithKittyData = this.updateWithKittyData.bind(this);
+    this.updateWithRandomKittyData = this.updateWithRandomKittyData.bind(this);
   }
 
   componentDidMount() {
@@ -44,7 +45,23 @@ class Browser extends Component {
     var kittyContract = this.context.drizzle.contractList[0];
     var kitty = await kittyContract.methods.getKitty(id).call();
     //TODO: convert from epoch to desired date format
-    this.setState({id: id, genes: kitty.genes, generation: kitty.generation, birthTime: kitty.birthTime});
+    if (kitty) {
+      this.setState({id: id, genes: kitty.genes, generation: kitty.generation, birthTime: kitty.birthTime});
+    } else {
+      //TODO: display err msg 
+    }
+  }
+
+  async updateWithRandomKittyData() {
+    var randomId = Math.floor(Math.random() * (this.totalKittySupply + 1)).toString();
+    var kittyContract = this.context.drizzle.contractList[0];
+    var kitty = await kittyContract.methods.getKitty(randomId).call();
+    //TODO: convert from epoch to desired date format
+    if (kitty) {
+      this.setState({id: randomId, genes: kitty.genes, generation: kitty.generation, birthTime: kitty.birthTime});
+    } else {
+      //TODO: display err msg 
+    }
   }
 
   update() {
@@ -65,6 +82,7 @@ class Browser extends Component {
             <input type="text" value= {this.state.id} onChange={this.update()} />
           </div>
           <button type="button" className="ui grey button" onClick={this.updateWithKittyData}>FIND KITTY</button>
+          <button type="button" className="ui purple button" onClick={this.updateWithRandomKittyData}>Fetch random Kitty</button>
         </div>
 
         <div>
