@@ -3,10 +3,9 @@ import { object } from 'prop-types';
 import Web3 from 'web3';
 import KittyCoreABI from '../contracts/KittyCoreABI.json';
 import { CONTRACT_NAME, CONTRACT_ADDRESS } from '../config';
+import KittyInfo from './KittyInfo';
 
 class Browser extends Component {
-
-  //TODO: make kitty react component
 
   constructor() {
     super();
@@ -94,20 +93,7 @@ class Browser extends Component {
           <button type="button" className="ui purple button" onClick={this.updateWithRandomKittyData}>Fetch random Kitty</button>
         </div>
 
-        <div>
-          <div><strong>Genes</strong></div>
-          <p>{this.state.genes}</p>
-        </div>
-
-        <div>
-          <div><strong>Generation</strong></div>
-          <p>{this.state.generation}</p>
-        </div>
-
-        <div>
-          <div><strong>Birth Time</strong></div>
-          <p>{this.state.birthTime}</p>
-        </div>
+        <KittyInfo genes={this.state.genes} generation={this.state.generation} birthTime={this.state.birthTime}></KittyInfo>
       </div>
     );
   }
