@@ -32,14 +32,23 @@ class Browser extends Component {
       web3Contract: kittyContract,
     });
 
-    kittyContract.methods.totalSupply().call().then((totalSupply) => { this.totalKittySupply = totalSupply; });
+    var me = this;
+    fetch("https://api.cryptokitties.co/kitties?orderBy=kitties.id&orderDirection=desc&limit=1")
+      .then(response => response.json())
+      .then(data => me.kittyLimit = data.kitties[0].id);
+
+    if(!this.kittyLimit)
+    {
+      //TODO
+    }
   }
 
   async updateWithKittyData() {
     var id = this.state.id;
-    if(isNaN(id) || parseInt(id) < 0 || parseInt(id) > this.totalKittySupply)
+    if(isNaN(id) || parseInt(id) < 0 || parseInt(id) > this.kittyLimit)
     {
       //TODO: display err msg
+      //Wrong input. If your kitty was recently created, consider refreshing the page.
       return;
     }
     var kittyContract = this.context.drizzle.contractList[0];
@@ -53,7 +62,7 @@ class Browser extends Component {
   }
 
   async updateWithRandomKittyData() {
-    var randomId = Math.floor(Math.random() * (this.totalKittySupply + 1)).toString();
+    var randomId = Math.floor(Math.random() * (this.kittyLimit + 1));
     var kittyContract = this.context.drizzle.contractList[0];
     var kitty = await kittyContract.methods.getKitty(randomId).call();
     //TODO: convert from epoch to desired date format
