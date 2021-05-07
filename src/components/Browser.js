@@ -9,7 +9,7 @@ class Browser extends Component {
 
   constructor() {
     super();
-    this.state = {kittyId: '', genes: '', generation: '', birthTime: ''};
+    this.state = {kittyId: '', genes: '', generation: '', birthTime: '', displayInfo: false};
     this.updateWithKittyData = this.updateWithKittyData.bind(this);
     this.updateWithRandomKittyData = this.updateWithRandomKittyData.bind(this);
   }
@@ -54,7 +54,7 @@ class Browser extends Component {
     var kitty = await kittyContract.methods.getKitty(id).call();
     //TODO: convert from epoch to desired date format
     if (kitty) {
-      this.setState({kittyId: id, genes: kitty.genes, generation: kitty.generation, birthTime: kitty.birthTime});
+      this.setState({kittyId: id, genes: kitty.genes, generation: kitty.generation, birthTime: kitty.birthTime, displayInfo: true});
     } else {
       //TODO: display err msg 
     }
@@ -66,7 +66,7 @@ class Browser extends Component {
     var kitty = await kittyContract.methods.getKitty(randomId).call();
     //TODO: convert from epoch to desired date format
     if (kitty) {
-      this.setState({kittyId: randomId, genes: kitty.genes, generation: kitty.generation, birthTime: kitty.birthTime});
+      this.setState({kittyId: randomId, genes: kitty.genes, generation: kitty.generation, birthTime: kitty.birthTime, displayInfo: true});
     } else {
       //TODO: display err msg 
     }
@@ -74,7 +74,7 @@ class Browser extends Component {
 
   update() {
     return (e) => {
-      this.setState({kittyId: e.target.value, genes: '', generation: '', birthTime: ''});
+      this.setState({kittyId: e.target.value, genes: '', generation: '', birthTime: '', displayInfo: false});
     };
   }
 
@@ -96,7 +96,8 @@ class Browser extends Component {
         <KittyInfo genes={this.state.genes} 
                    generation={this.state.generation} 
                    birthTime={this.state.birthTime} 
-                   kittyId={this.state.kittyId} />
+                   kittyId={this.state.kittyId}
+                   displayInfo={this.state.displayInfo} />
       </div>
     );
   }
