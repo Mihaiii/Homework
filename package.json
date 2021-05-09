@@ -23,7 +23,7 @@
     "@testing-library/react": "^11.2.6",
     "@testing-library/user-event": "^13.1.8",
     "web3-fake-provider": "*",
-    "ganache-cli": "^6.12.2"
+    "ethereumjs-testrpc": "2.2.7"
   },
   "browserslist": {
     "production": [

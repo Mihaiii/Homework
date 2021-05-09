@@ -4,7 +4,7 @@ import Web3 from 'web3';
 import KittyCoreABI from '../contracts/KittyCoreABI.json';
 import { CONTRACT_NAME, CONTRACT_ADDRESS } from '../config';
 import KittyInfo from './KittyInfo';
-import ganache from 'ganache-cli';
+import ganache from 'ethereumjs-testrpc';
 
 class Browser extends Component {
 
