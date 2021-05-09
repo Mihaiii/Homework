@@ -23,7 +23,7 @@
     "@testing-library/react": "^11.2.6",
     "@testing-library/user-event": "^13.1.8",
     "web3-fake-provider": "*",
-    "ethereumjs-testrpc": "2.2.7"
+    "ethereumjs-testrpc": "2.0.0"
   },
   "browserslist": {
     "production": [
