@@ -4,11 +4,12 @@ import Web3 from 'web3';
 import KittyCoreABI from '../contracts/KittyCoreABI.json';
 import { CONTRACT_NAME, CONTRACT_ADDRESS } from '../config';
 import KittyInfo from './KittyInfo';
+import ganache from 'ganache-cli';
 
 class Browser extends Component {
 
-  constructor() {
-    super();
+  constructor(props, context) {
+    super(props);
     this.state = {kittyId: '', genes: '', generation: '', birthTime: '', displayInfo: false};
     this.updateWithKittyData = this.updateWithKittyData.bind(this);
     this.updateWithRandomKittyData = this.updateWithRandomKittyData.bind(this);
@@ -16,7 +17,6 @@ class Browser extends Component {
 
   componentDidMount() {
     const web3 = new Web3(window.web3.currentProvider);
-
     //Initialize the contract instance
 
     const kittyContract = new web3.eth.Contract(
@@ -26,7 +26,7 @@ class Browser extends Component {
 
     //Add the contract to the drizzle store
 
-    this.context.drizzle.addContract({
+    this.props.drizzle.addContract({
       contractName: CONTRACT_NAME,
       web3Contract: kittyContract,
     });
@@ -50,7 +50,7 @@ class Browser extends Component {
       //Wrong input. If your kitty was recently created, consider refreshing the page.
       return;
     }
-    var kittyContract = this.context.drizzle.contractList[0];
+    var kittyContract = this.props.drizzle.contractList[0];
     var kitty = await kittyContract.methods.getKitty(id).call();
     //TODO: convert from epoch to desired date format
     if (kitty) {
@@ -62,7 +62,7 @@ class Browser extends Component {
 
   async updateWithRandomKittyData() {
     var randomId = Math.floor(Math.random() * (this.kittyLimit + 1));
-    var kittyContract = this.context.drizzle.contractList[0];
+    var kittyContract = this.props.drizzle.contractList[0];
     var kitty = await kittyContract.methods.getKitty(randomId).call();
     //TODO: convert from epoch to desired date format
     if (kitty) {
@@ -102,9 +102,5 @@ class Browser extends Component {
     );
   }
 }
-
-Browser.contextTypes = {
-  drizzle: object,
-};
 
 export default Browser;
