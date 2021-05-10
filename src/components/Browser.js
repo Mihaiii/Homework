@@ -4,10 +4,10 @@ import Web3 from 'web3';
 import KittyCoreABI from '../contracts/KittyCoreABI.json';
 import { CONTRACT_NAME, CONTRACT_ADDRESS } from '../config';
 import KittyInfo from './KittyInfo';
-import ganache from 'ethereumjs-testrpc';
 
 class Browser extends Component {
 
+  //TODO: add labels, update css (display block, font-weight bold, add name on input for both labels and the test so it won't rely on placeholder)
   constructor(props, context) {
     super(props);
     this.state = {kittyId: '', genes: '', generation: '', birthTime: '', displayInfo: false};
@@ -34,12 +34,13 @@ class Browser extends Component {
     var me = this;
     fetch("https://api.cryptokitties.co/kitties?orderBy=kitties.id&orderDirection=desc&limit=1")
       .then(response => response.json())
-      .then(data => me.kittyLimit = data.kitties[0].id);
-
-    if(!this.kittyLimit)
-    {
-      //TODO
-    }
+      .then(data => {
+        if(!this.kittyLimit)
+        {
+          //TODO
+        }
+        me.kittyLimit = data.kitties[0].id
+      });
   }
 
   async updateWithKittyData() {
@@ -87,7 +88,7 @@ class Browser extends Component {
         <div>
           <div><strong>Kitty ID:</strong></div>
           <div className="ui input">
-            <input type="text" value= {this.state.kittyId} onChange={this.update()} />
+            <input type="text" value= {this.state.kittyId} onChange={this.update()} placeholder="123123" />
           </div>
           <button type="button" className="ui grey button" onClick={this.updateWithKittyData}>FIND KITTY</button>
           <button type="button" className="ui purple button" onClick={this.updateWithRandomKittyData}>Fetch random Kitty</button>
