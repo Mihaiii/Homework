@@ -9,23 +9,23 @@ class KittyInfo extends Component {
 			let height = "300px";
 			let width = "300px";
 			kittyImgEl = ( <img src={src} height={height} width={width} /> );
+			var d = new Date(0);
+			d.setUTCSeconds(this.props.birthTime);
+			let birthDate = d.toLocaleDateString("ro-Ro");
 	    return (
-				<div>
-					<div>
-						<div><strong>Genes</strong></div>
-						<p>{this.props.genes}</p>
-					</div>
-
-					<div>
-						<div><strong>Generation</strong></div>
-						<p>{this.props.generation}</p>
-					</div>
-
-					<div>
-						<div><strong>Birth Time</strong></div>
-						<p>{this.props.birthTime}</p>
-					</div>
-					{kittyImgEl}
+	    	<div className="ui list">
+				  <div className="item">
+				    Genes: {this.props.genes}
+				  </div>
+				  <div className="item">
+				    Generation: {this.props.generation}
+				  </div>
+				  <div className="item">
+				    Birth Time: {birthDate}
+				  </div>
+				  <div className="item">
+				    {kittyImgEl}
+				  </div>
 				</div>
     	)
   	}

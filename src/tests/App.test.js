@@ -38,14 +38,13 @@ test("Genes is displayed", async () => {
 
   render(<FakeApp kittyLimit="1" contractAddress={deployedContract.options.address} />);
   //await waitForElementToBeRemoved(screen.getByText(/Loading dapp.../i), {timeout: 30000})
-  await waitFor(() => screen.getByText(/FIND KITTY/i), {timeout: 4000});
-  var inputEl = screen.getByPlaceholderText("123123");
+  var inputEl = await waitFor(() => screen.getByLabelText(/Kitty ID:/i), {timeout: 10000});
   
   fireEvent.change(inputEl, { target: { value: "1" } })
   fireEvent.click(screen.getByText(/FIND KITTY/i));
-  await waitFor(() => screen.getByText(/Generation/i), {timeout: 17000});
+  await waitFor(() => screen.getByText(/Generation/i), {timeout: 10000});
 
   expect(inputEl.value).toBe("1");
-  expect(screen.getByText(genes)).toBeTruthy();
+  expect(screen.getByText(genes, { exact: false })).toBeTruthy();
 
-}, 50000);
+}, 20000);

@@ -4,18 +4,25 @@ import Web3 from 'web3';
 import KittyCoreABI from '../contracts/KittyCoreABI.json';
 import { CONTRACT_NAME, CONTRACT_ADDRESS } from '../config';
 import KittyInfo from './KittyInfo';
+import './Browser.css';
 
 class Browser extends Component {
 
-  //TODO: add labels, update css (display block, font-weight bold, add name on input for both labels and the test so it won't rely on placeholder)
   constructor(props, context) {
     super(props);
-    this.state = {kittyId: '', genes: '', generation: '', birthTime: '', displayInfo: false};
+    this.state = {kittyId: '', genes: '', generation: '', birthTime: '', displayInfo: false, errMsg: ""};
     this.updateWithKittyData = this.updateWithKittyData.bind(this);
     this.updateWithRandomKittyData = this.updateWithRandomKittyData.bind(this);
+    this.update = this.update.bind(this);
+    this.setErrMsg = this.setErrMsg.bind(this);
+    this.kittyLimit;
   }
 
   componentDidMount() {
+    if(this.props.drizzle.contractList[0] && this.props.drizzle.contractList[0].contractName == CONTRACT_NAME) {
+      return;
+    }
+
     const web3 = new Web3(window.web3.currentProvider);
     //Initialize the contract instance
 
@@ -35,65 +42,77 @@ class Browser extends Component {
     fetch("https://api.cryptokitties.co/kitties?orderBy=kitties.id&orderDirection=desc&limit=1")
       .then(response => response.json())
       .then(data => {
-        if(!this.kittyLimit)
+        if(!data.kitties[0])
         {
-          //TODO
+          this.setErrMsg("Can't fetch kitty limit.").show();
         }
         me.kittyLimit = data.kitties[0].id
       });
   }
 
   async updateWithKittyData() {
-    var id = this.state.kittyId;
-    if(isNaN(id) || parseInt(id) < 0 || parseInt(id) > this.kittyLimit)
+    if(typeof(this.kittyLimit) === 'undefined') return;
+    var id = parseInt(this.state.kittyId);
+    if(isNaN(id) || id < 0 || id > this.kittyLimit || id != this.state.kittyId)
     {
-      //TODO: display err msg
-      //Wrong input. If your kitty was recently created, consider refreshing the page.
+      this.setErrMsg("Wrong input. If your kitty was recently created, consider refreshing the page.").show();
       return;
     }
-    var kittyContract = this.props.drizzle.contractList[0];
-    var kitty = await kittyContract.methods.getKitty(id).call();
-    //TODO: convert from epoch to desired date format
-    if (kitty) {
-      this.setState({kittyId: id, genes: kitty.genes, generation: kitty.generation, birthTime: kitty.birthTime, displayInfo: true});
-    } else {
-      //TODO: display err msg 
-    }
+    await this.update(id);
   }
 
   async updateWithRandomKittyData() {
+    if(typeof(this.kittyLimit) === 'undefined') return;
     var randomId = Math.floor(Math.random() * (this.kittyLimit + 1));
+    await this.update(randomId);
+  }
+
+  inputUpdate() {
+    return (e) => {
+      this.setState({kittyId: e.target.value, genes: '', generation: '', birthTime: '', displayInfo: false, errMsg: ""});
+    };
+  }
+
+  async update(id) {
     var kittyContract = this.props.drizzle.contractList[0];
-    var kitty = await kittyContract.methods.getKitty(randomId).call();
-    //TODO: convert from epoch to desired date format
+    var kitty = await kittyContract.methods.getKitty(id).call();
     if (kitty) {
-      this.setState({kittyId: randomId, genes: kitty.genes, generation: kitty.generation, birthTime: kitty.birthTime, displayInfo: true});
+      this.setState({kittyId: id, genes: kitty.genes, generation: kitty.generation, birthTime: kitty.birthTime, displayInfo: true, errMsg: ""});
     } else {
-      //TODO: display err msg 
+      this.setErrMsg("Can't get kitty info.").show(); 
     }
   }
 
-  update() {
-    return (e) => {
-      this.setState({kittyId: e.target.value, genes: '', generation: '', birthTime: '', displayInfo: false});
+  setErrMsg(errMsg) {
+    return {
+      show: () => {
+        this.setState({ errMsg: errMsg });
+      }
     };
   }
 
   render() {
+    let errMsgElemenet = (<div></div>);
+    if(this.state.errMsg) {
+      errMsgElemenet = (<div className="ui negative message">
+                          <i className="close icon" onClick={this.setErrMsg("").show}></i>
+                          <p>{this.state.errMsg}</p>
+                        </div>);
+    }
     return (
       <div className="browser">
         <h1>
           Kitty Browser
         </h1>
-        <div>
-          <div><strong>Kitty ID:</strong></div>
-          <div className="ui input">
-            <input type="text" value= {this.state.kittyId} onChange={this.update()} placeholder="123123" />
-          </div>
+        <div className="ui labeled input action">
+          <label className="ui label" htmlFor="kittyId" >
+            Kitty ID:
+          </label>
+          <input type="text" value= {this.state.kittyId} onChange={this.inputUpdate()} id="kittyId" />
           <button type="button" className="ui grey button" onClick={this.updateWithKittyData}>FIND KITTY</button>
-          <button type="button" className="ui purple button" onClick={this.updateWithRandomKittyData}>Fetch random Kitty</button>
+          <button type="button" className="ui olive button" onClick={this.updateWithRandomKittyData}>Fetch random Kitty</button>
         </div>
-
+        {errMsgElemenet}
         <KittyInfo genes={this.state.genes} 
                    generation={this.state.generation} 
                    birthTime={this.state.birthTime} 
