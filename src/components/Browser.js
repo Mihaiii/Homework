@@ -42,16 +42,17 @@ class Browser extends Component {
     fetch("https://api.cryptokitties.co/kitties?orderBy=kitties.id&orderDirection=desc&limit=1")
       .then(response => response.json())
       .then(data => {
-        if(!data.kitties[0])
+        if(data?.kitties?.length && data.kitties[0])
         {
+          me.kittyLimit = data.kitties[0].id;
+        } else {
           this.setErrMsg("Can't fetch kitty limit.").show();
         }
-        me.kittyLimit = data.kitties[0].id
       });
   }
 
   async updateWithKittyData() {
-    if(typeof(this.kittyLimit) === 'undefined') return;
+    if(typeof(this.kittyLimit) === 'undefined' || this.state.errMsg) return;
     var id = parseInt(this.state.kittyId);
     if(isNaN(id) || id < 0 || id > this.kittyLimit || id != this.state.kittyId)
     {
@@ -62,7 +63,7 @@ class Browser extends Component {
   }
 
   async updateWithRandomKittyData() {
-    if(typeof(this.kittyLimit) === 'undefined') return;
+    if(typeof(this.kittyLimit) === 'undefined' || this.state.errMsg) return;
     var randomId = Math.floor(Math.random() * (this.kittyLimit + 1));
     await this.update(randomId);
   }
@@ -109,8 +110,8 @@ class Browser extends Component {
             Kitty ID:
           </label>
           <input type="text" value= {this.state.kittyId} onChange={this.inputUpdate()} id="kittyId" />
-          <button type="button" className="ui grey button" onClick={this.updateWithKittyData}>FIND KITTY</button>
-          <button type="button" className="ui olive button" onClick={this.updateWithRandomKittyData}>Fetch random Kitty</button>
+          <button type="button" className={`ui grey button ${this.state.errMsg ? "disabled" : ""}`} onClick={this.updateWithKittyData}>FIND KITTY</button>
+          <button type="button" className={`ui olive button ${this.state.errMsg ? "disabled" : ""}`} onClick={this.updateWithRandomKittyData}>Fetch random Kitty</button>
         </div>
         {errMsgElemenet}
         <KittyInfo genes={this.state.genes} 
